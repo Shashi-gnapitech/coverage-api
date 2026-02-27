@@ -3,6 +3,14 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { InjectConnection } from 'nest-knexjs';
 import { Knex } from 'knex';
+import {
+  Project,
+  ApiKey,
+  TestRun,
+  TestCase,
+  CoverageFile,
+  Artifact,
+} from './entities/project.entity';
 
 @Injectable()
 export class ProjectsService {
@@ -10,7 +18,7 @@ export class ProjectsService {
 
   /*--------------------Create Project-----------------------*/
   async create(createProjectDto: CreateProjectDto) {
-    const [project] = await this.knex('code_coverage.projects')
+    const [project] = await this.knex<Project>('code_coverage.projects')
       .insert({
         projectname: createProjectDto.projectname,
         ingestiontoken: createProjectDto.ingestiontoken,
@@ -21,12 +29,12 @@ export class ProjectsService {
 
   /*--------------------Get All Project-----------------------*/
   async findAll() {
-    return this.knex('code_coverage.projects').select('*');
+    return this.knex<Project>('code_coverage.projects').select('*');
   }
 
   /*--------------------Get One Project-----------------------*/
   async findOne(id: string) {
-    const project = await this.knex('code_coverage.projects')
+    const project = await this.knex<Project>('code_coverage.projects')
       .where({ projectid: id })
       .first();
     if (!project) {
@@ -37,7 +45,7 @@ export class ProjectsService {
 
   /*--------------------Update Project-----------------------*/
   async update(id: string, updateProjectDto: UpdateProjectDto) {
-    const [project] = await this.knex('code_coverage.projects')
+    const [project] = await this.knex<Project>('code_coverage.projects')
       .where({ projectid: id })
       .update(updateProjectDto)
       .returning('*');
@@ -49,7 +57,7 @@ export class ProjectsService {
 
   /*--------------------Delete Project-----------------------*/
   async remove(id: string) {
-    const count = await this.knex('code_coverage.projects')
+    const count = await this.knex<Project>('code_coverage.projects')
       .where({ projectid: id })
       .delete();
     if (count === 0) {
@@ -60,7 +68,9 @@ export class ProjectsService {
 
   /*--------------------Get Project API Keys-----------------------*/
   async getApiKeys(id: string) {
-    const apiKeys = await this.knex('code_coverage.ingest_api_keys').where({
+    const apiKeys = await this.knex<ApiKey>(
+      'code_coverage.ingest_api_keys',
+    ).where({
       project_id: id,
     });
     return apiKeys;
@@ -68,31 +78,33 @@ export class ProjectsService {
 
   /*--------------------Get Project Test Runs-----------------------*/
   async getTestRuns(id: string) {
-    const testRuns = await this.knex('code_coverage.unit_test_run')
+    const testRuns = await this.knex<TestRun>('code_coverage.unit_test_run')
       .where({ project_id: id })
       .orderBy('created_at', 'desc');
 
     if (testRuns.length > 0) {
-      const runIds = testRuns.map((run: any) => run.id);
+      const runIds = testRuns.map((run: TestRun) => run.id);
 
-      const testCases = await this.knex(
+      const testCases = await this.knex<TestCase>(
         'code_coverage.unit_test_cases_run',
       ).whereIn('run_id', runIds);
 
-      const coverageFiles = await this.knex(
+      const coverageFiles = await this.knex<CoverageFile>(
         'code_coverage.coverage_files',
       ).whereIn('run_id', runIds);
 
-      const artifacts = await this.knex(
+      const artifacts = await this.knex<Artifact>(
         'code_coverage.unit_test_ingest_artifacts',
       ).whereIn('run_id', runIds);
 
-      testRuns.forEach((run: any) => {
-        run.test_cases = testCases.filter((tc: any) => tc.run_id === run.id);
-        run.coverage_files = coverageFiles.filter(
-          (cf: any) => cf.run_id === run.id,
+      testRuns.forEach((run: TestRun) => {
+        run.test_cases = testCases.filter(
+          (tc: TestCase) => tc.run_id === run.id,
         );
-        run.artifacts = artifacts.filter((a: any) => a.run_id === run.id);
+        run.coverage_files = coverageFiles.filter(
+          (cf: CoverageFile) => cf.run_id === run.id,
+        );
+        run.artifacts = artifacts.filter((a: Artifact) => a.run_id === run.id);
       });
     }
 

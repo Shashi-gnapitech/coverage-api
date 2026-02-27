@@ -97,7 +97,7 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 
-docker build -t coverage-api
+docker build -t coverage-api .
 
 docker run -p 3500:3000 coverage-api
 
@@ -106,3 +106,5 @@ npm run db:migrate
 npm run db:create
 
 npm run db:seed
+
+npx eslint src/projects/projects.service.ts
