@@ -30,8 +30,7 @@ RUN npm ci --omit=dev
 # Copy the built application from the builder stage
 COPY --from=builder /usr/src/app/dist ./dist
 
-# Optional: Add any missing resources such as migration files if necessary
-# COPY --from=builder /usr/src/app/db ./db
+
 
 # Expose the port the app runs on
 EXPOSE 3000

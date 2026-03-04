@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { CreateTestRunDto } from './dto/create-test-run.dto';
@@ -118,8 +122,15 @@ export class ProjectsService {
 
   /*--------------------Create Project Test Run-----------------------*/
   async createTestRun(id: string, createTestRunDto: CreateTestRunDto) {
-    const { test_cases, coverage_files, artifacts, ...runData } =
+    const { test_cases, coverage_files, artifacts, project_id, ...runData } =
       createTestRunDto;
+
+    // Explicit validation: if project_id is provided in the JSON body, it MUST match the URL id (and the token's allowed project).
+    if (project_id && project_id !== id) {
+      throw new BadRequestException(
+        `The project_id in the request body (${project_id}) does not match the requested URL project ID (${id}).`,
+      );
+    }
 
     return this.knex.transaction(async (trx) => {
       // 1. Insert core test run data

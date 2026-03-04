@@ -1,4 +1,5 @@
 export class CreateTestRunDto {
+  project_id?: string;
   repo?: string;
   branch?: string;
   commit_sha?: string;
