@@ -16,7 +16,7 @@ on:
 
 jobs:
   qodana:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
@@ -40,7 +40,9 @@ jobs:
           echo "@gnapi-tech:registry=https://npm.pkg.github.com" >> ~/.npmrc
 
       - name: Install dependencies
-        run: rm -rf node_modules && npm ci --legacy-peer-deps
+        run: |
+          rm -rf node_modules && npm ci --legacy-peer-deps
+          cd coverage-dashboard && rm -rf node_modules && npm ci --legacy-peer-deps
 
       - name: Cleanup existing Qodana containers
         run: |
