@@ -1,12 +1,13 @@
+import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 
 export const mount = (
   el: HTMLDivElement,
-  opts: { basePath: string; projectId?: string },
+  opts: { basePath: string; projectId?: string; apiBaseUrl?: string }
 ): (() => void) => {
   const root = createRoot(el);
-  root.render(<App projectId={opts.projectId} basePath={opts.basePath} />);
+  root.render(<App projectId={opts.projectId} apiBaseUrl={opts.apiBaseUrl} />);
   return () => setTimeout(() => root.unmount(), 0);
 };
 

@@ -12,10 +12,10 @@ interface Project {
 
 interface AppProps {
   projectId?: string;
-  basePath?: string;
+  apiBaseUrl?: string;
 }
 
-export const App: React.FC<AppProps> = ({ projectId: propProjectId }) => {
+export const App: React.FC<AppProps> = ({ projectId: propProjectId, apiBaseUrl = '/api' }) => {
   // Detect if we are embedded via iframe at /project/:projectId
   const urlProjectId = propProjectId || (() => {
     const match = window.location.pathname.match(/^\/project\/([^/]+)/);
@@ -35,23 +35,26 @@ export const App: React.FC<AppProps> = ({ projectId: propProjectId }) => {
       return;
     }
 
-    fetch('/api/projects')
-      .then((res) => res.json())
+    fetch(`${apiBaseUrl}/projects`)
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch from API');
+        return res.json();
+      })
       .then((data: Project[]) => {
         setProjects(data);
         setLoading(false);
       })
-      .catch(() => {
-        setError('Failed to fetch projects. Is the API running?');
+      .catch((err) => {
+        setError(`Failed to fetch projects. Is the API running? Error: ${err.message}`);
         setLoading(false);
       });
-  }, [urlProjectId]);
+  }, [urlProjectId, apiBaseUrl]);
 
   // ── Embedded/iframe mode ───────────────────────────────────────────────────
   if (urlProjectId) {
     return (
       <div className="app-container">
-        <CoverageTab projectId={urlProjectId} apiBaseUrl="/api" />
+        <CoverageTab projectId={urlProjectId} apiBaseUrl={apiBaseUrl} />
       </div>
     );
   }
@@ -96,7 +99,7 @@ export const App: React.FC<AppProps> = ({ projectId: propProjectId }) => {
             <h1 className="header-title">{selectedProject.projectname}</h1>
           </div>
         </header>
-        <CoverageTab projectId={selectedProject.projectid} apiBaseUrl="/api" />
+        <CoverageTab projectId={selectedProject.projectid} apiBaseUrl={apiBaseUrl} />
       </div>
     );
   }
