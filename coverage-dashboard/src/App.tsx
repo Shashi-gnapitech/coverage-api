@@ -10,9 +10,14 @@ interface Project {
   created_at: string;
 }
 
-export const App: React.FC = () => {
+interface AppProps {
+  projectId?: string;
+  basePath?: string;
+}
+
+export const App: React.FC<AppProps> = ({ projectId: propProjectId }) => {
   // Detect if we are embedded via iframe at /project/:projectId
-  const urlProjectId = (() => {
+  const urlProjectId = propProjectId || (() => {
     const match = window.location.pathname.match(/^\/project\/([^/]+)/);
     return match ? match[1] : null;
   })();
