@@ -25,6 +25,10 @@ export default defineConfig({
       },
     },
   },
+  preview: {
+    port: 5173,
+    cors: true,
+  },
   build: {
     target: 'esnext',
     minify: false,
