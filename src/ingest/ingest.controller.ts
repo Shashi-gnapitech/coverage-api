@@ -61,13 +61,21 @@ export class IngestController {
     // 2. Extract form fields
     const body = req.body;
     const projectId = body['projectId'];
-    const branch = body['branch'];
+    const rawBranch = body['branch'] ?? '';
+    const headBranch = body['head_branch'] ?? ''; // GITHUB_HEAD_REF (real PR branch)
     const commit = body['commit'];
     const repo = body['repo'] ?? 'unknown';
 
     if (!projectId) throw new BadRequestException('projectId is required');
-    if (!branch) throw new BadRequestException('branch is required');
+    if (!rawBranch) throw new BadRequestException('branch is required');
     if (!commit) throw new BadRequestException('commit is required');
+
+    // Normalize GitHub PR merge refs (e.g. "refs/pull/11/merge" or "11/merge")
+    // to the real source branch name when available.
+    const isPrMergeRef = /^(refs\/pull\/\d+\/merge|\d+\/merge)$/.test(
+      rawBranch,
+    );
+    const branch = isPrMergeRef && headBranch ? headBranch : rawBranch;
 
     // 3. Validate raw token against stored SHA-256 hash
     const hashedToken = crypto
