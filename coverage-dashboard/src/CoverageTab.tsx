@@ -42,7 +42,7 @@ import { GitCommitLineIcon } from './assets/GitCommitIcon';
  *  2–11 months   → "X months ago"
  *  12–23 months  → "last year"
  *  ≥ 24 months   → "X years ago"
- * 
+ *
  */
 const formatRelativeTime = (dateStr: string): string => {
   const now = new Date();
@@ -137,8 +137,8 @@ jobs:
         if: always()
         uses: gnapi-tech/katalyst-ingest-custom-action@main
         with:
-          katalyst_base_url: \${{ secrets.KATALYST_BASE_URL }}
           ingest_token: \${{ secrets.KATALYST_INGESTION_TOKEN }}
+          branch: \${{ github.head_ref || github.ref_name }}
           junit_path: "junit.xml"
           lcov_path: "coverage/lcov.info"`;
 
@@ -168,7 +168,9 @@ const CiYamlCard: React.FC = () => {
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <GitFork size={16} color="var(--accent-primary)" />
-          <span style={{ fontWeight: 600, fontSize: '0.9rem', color: '#111827' }}>
+          <span
+            style={{ fontWeight: 600, fontSize: '0.9rem', color: '#111827' }}
+          >
             Example{' '}
             <code
               style={{
@@ -218,7 +220,8 @@ const CiYamlCard: React.FC = () => {
           fontSize: '0.78rem',
           lineHeight: 1.65,
           color: '#cdd6f4',
-          fontFamily: '"JetBrains Mono", "Fira Code", "Cascadia Code", monospace',
+          fontFamily:
+            '"JetBrains Mono", "Fira Code", "Cascadia Code", monospace',
         }}
       >
         <code>{CI_YAML}</code>
@@ -237,7 +240,7 @@ export const CoverageTab: React.FC<CoverageTabProps> = ({
 
   type FetchState = { testRuns: TestRun[]; loading: boolean; error: string };
 
-  function fetchReducer(state: FetchState, action: FetchAction): FetchState {
+  const fetchReducer = (state: FetchState, action: FetchAction): FetchState => {
     switch (action.type) {
       case 'FETCH_SUCCESS':
         return { testRuns: action.data, loading: false, error: '' };
@@ -246,7 +249,7 @@ export const CoverageTab: React.FC<CoverageTabProps> = ({
       default:
         return state;
     }
-  }
+  };
 
   const [{ testRuns, loading, error }, dispatch] = React.useReducer(
     fetchReducer,
@@ -325,7 +328,7 @@ export const CoverageTab: React.FC<CoverageTabProps> = ({
         icon: <GitFork size={20} color="var(--accent-primary)" />,
         title: 'Add the GitHub Action',
         description:
-          'Add the Katalyst ingestion action to your repository\'s GitHub workflow file (e.g. .github/workflows/ci.yml).',
+          "Add the Katalyst ingestion action to your repository's GitHub workflow file (e.g. .github/workflows/ci.yml).",
       },
       {
         icon: <KeyRound size={20} color="var(--accent-primary)" />,
@@ -333,8 +336,11 @@ export const CoverageTab: React.FC<CoverageTabProps> = ({
         description:
           'Navigate to your repository → Settings → Secrets and variables → Actions, then add:',
         secrets: [
-          { name: 'KATALYST_INGESTION_TOKEN', label: 'Project Ingestion Token', hint: 'Retrieved from Katalyst → Project Settings' },
-          { name: 'KATALYST_BASE_URL', label: 'Katalyst Base URL', hint: 'The URL of your Katalyst instance' },
+          {
+            name: 'KATALYST_INGESTION_TOKEN',
+            label: 'Project Ingestion Token',
+            hint: 'Retrieved from Katalyst → Project Settings',
+          },
         ],
       },
       {
@@ -350,14 +356,33 @@ export const CoverageTab: React.FC<CoverageTabProps> = ({
         {/* Header */}
         <div
           className="glass-card"
-          style={{ marginBottom: '1.5rem', textAlign: 'center', padding: '2.5rem 2rem 2rem' }}
+          style={{
+            marginBottom: '1.5rem',
+            textAlign: 'center',
+            padding: '2.5rem 2rem 2rem',
+          }}
         >
           <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>📊</div>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#111827', marginBottom: '0.4rem' }}>
+          <h3
+            style={{
+              fontSize: '1.25rem',
+              fontWeight: 700,
+              color: '#111827',
+              marginBottom: '0.4rem',
+            }}
+          >
             No coverage data yet
           </h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', maxWidth: 480, margin: '0 auto' }}>
-            Follow the steps below to start ingesting test coverage data into Katalyst.
+          <p
+            style={{
+              color: 'var(--text-secondary)',
+              fontSize: '0.9rem',
+              maxWidth: 480,
+              margin: '0 auto',
+            }}
+          >
+            Follow the steps below to start ingesting test coverage data into
+            Katalyst.
           </p>
         </div>
 
@@ -367,10 +392,23 @@ export const CoverageTab: React.FC<CoverageTabProps> = ({
             <div
               key={i}
               className="glass-card"
-              style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start', padding: '1.25rem 1.5rem' }}
+              style={{
+                display: 'flex',
+                gap: '1.25rem',
+                alignItems: 'flex-start',
+                padding: '1.25rem 1.5rem',
+              }}
             >
               {/* Step number + icon */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem', minWidth: 36 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  minWidth: 36,
+                }}
+              >
                 <div
                   style={{
                     width: 28,
@@ -388,21 +426,56 @@ export const CoverageTab: React.FC<CoverageTabProps> = ({
                   {i + 1}
                 </div>
                 {i < steps.length - 1 && (
-                  <div style={{ width: 1, flex: 1, minHeight: 16, background: 'var(--border-glass)' }} />
+                  <div
+                    style={{
+                      width: 1,
+                      flex: 1,
+                      minHeight: 16,
+                      background: 'var(--border-glass)',
+                    }}
+                  />
                 )}
               </div>
 
               {/* Content */}
               <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    marginBottom: '0.4rem',
+                  }}
+                >
                   {step.icon}
-                  <span style={{ fontWeight: 600, color: '#111827', fontSize: '0.95rem' }}>{step.title}</span>
+                  <span
+                    style={{
+                      fontWeight: 600,
+                      color: '#111827',
+                      fontSize: '0.95rem',
+                    }}
+                  >
+                    {step.title}
+                  </span>
                 </div>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: step.secrets ? '0.75rem' : 0 }}>
+                <p
+                  style={{
+                    color: 'var(--text-secondary)',
+                    fontSize: '0.875rem',
+                    lineHeight: 1.6,
+                    marginBottom: step.secrets ? '0.75rem' : 0,
+                  }}
+                >
                   {step.description}
                 </p>
                 {step.secrets && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.5rem',
+                    }}
+                  >
                     {step.secrets.map((s) => (
                       <div
                         key={s.name}
@@ -416,7 +489,14 @@ export const CoverageTab: React.FC<CoverageTabProps> = ({
                           padding: '0.5rem 0.75rem',
                         }}
                       >
-                        <ArrowRight size={14} style={{ color: 'var(--accent-primary)', marginTop: 2, flexShrink: 0 }} />
+                        <ArrowRight
+                          size={14}
+                          style={{
+                            color: 'var(--accent-primary)',
+                            marginTop: 2,
+                            flexShrink: 0,
+                          }}
+                        />
                         <div>
                           <code
                             style={{
@@ -430,10 +510,22 @@ export const CoverageTab: React.FC<CoverageTabProps> = ({
                           >
                             {s.name}
                           </code>
-                          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginLeft: '0.4rem' }}>
+                          <span
+                            style={{
+                              fontSize: '0.8rem',
+                              color: 'var(--text-secondary)',
+                              marginLeft: '0.4rem',
+                            }}
+                          >
                             — {s.label}
                           </span>
-                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                          <div
+                            style={{
+                              fontSize: '0.75rem',
+                              color: 'var(--text-muted)',
+                              marginTop: '0.15rem',
+                            }}
+                          >
                             {s.hint}
                           </div>
                         </div>
@@ -462,10 +554,9 @@ export const CoverageTab: React.FC<CoverageTabProps> = ({
   );
 
   // Runs filtered to the selected branch (or all if none selected)
-  const branchRuns =
-    selectedBranch
-      ? testRuns.filter((r) => r.branch === selectedBranch)
-      : testRuns;
+  const branchRuns = selectedBranch
+    ? testRuns.filter((r) => r.branch === selectedBranch)
+    : testRuns;
 
   const latestRun = branchRuns[0] ?? testRuns[0];
   const overallCoverage = parseFloat(latestRun.coverage_percent);
@@ -559,7 +650,9 @@ export const CoverageTab: React.FC<CoverageTabProps> = ({
                   size={14}
                   style={{
                     transition: 'transform 0.2s',
-                    transform: branchMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transform: branchMenuOpen
+                      ? 'rotate(180deg)'
+                      : 'rotate(0deg)',
                   }}
                 />
               </button>
@@ -584,7 +677,15 @@ export const CoverageTab: React.FC<CoverageTabProps> = ({
                         <GitBranchIcon width={14} height={14} />
                         <span>{branch}</span>
                         {branch === selectedBranch && (
-                          <span style={{ marginLeft: 'auto', fontSize: '0.7rem', opacity: 0.6 }}>✓</span>
+                          <span
+                            style={{
+                              marginLeft: 'auto',
+                              fontSize: '0.7rem',
+                              opacity: 0.6,
+                            }}
+                          >
+                            ✓
+                          </span>
                         )}
                       </button>
                       {index < allBranches.length - 1 && (
@@ -750,7 +851,6 @@ export const CoverageTab: React.FC<CoverageTabProps> = ({
           <table className="data-table">
             <thead>
               <tr>
-                <th>Branch</th>
                 <th>Commit</th>
                 <th>Date</th>
                 <th>Status</th>
@@ -761,35 +861,6 @@ export const CoverageTab: React.FC<CoverageTabProps> = ({
             <tbody>
               {paginatedRuns.map((run) => (
                 <tr key={run.id}>
-                  <td style={{ fontWeight: 500 }}>
-                    <span
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                      }}
-                    >
-                      <GitBranchIcon width={20} height={20} />
-                      <a
-                        href={`https://github.com/${run.repo}/tree/${run.branch}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          color: 'var(--text-primary)',
-                          textDecoration: 'none',
-                        }}
-                        onMouseOver={(e) =>
-                          (e.currentTarget.style.textDecoration = 'underline')
-                        }
-                        onMouseOut={(e) =>
-                          (e.currentTarget.style.textDecoration = 'none')
-                        }
-                      >
-                        {run.branch}
-                      </a>
-                      {run.pr_number && ` (#${run.pr_number})`}
-                    </span>
-                  </td>
                   <td
                     style={{
                       fontFamily: 'monospace',
