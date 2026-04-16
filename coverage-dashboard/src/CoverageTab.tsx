@@ -42,6 +42,7 @@ import { GitCommitLineIcon } from './assets/GitCommitIcon';
  *  2–11 months   → "X months ago"
  *  12–23 months  → "last year"
  *  ≥ 24 months   → "X years ago"
+ * 
  */
 const formatRelativeTime = (dateStr: string): string => {
   const now = new Date();
